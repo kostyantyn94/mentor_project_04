@@ -3,11 +3,10 @@ export function parseCountriesInfo(response) {
     const countries = [];
 
     for (let i = 0; i < response.length; i++) {
-
         countries[i] = {}
 
         countries[i].name = response[i].name.common
-    
+
         if ('nativeName' in response[i].name) {
         countries[i].nativeName = response[i].name.nativeName[Object.keys(response[i].name.nativeName)[0]].official
         }
@@ -57,3 +56,4 @@ export function parseCountriesInfo(response) {
     }
     return countries
 } 
+

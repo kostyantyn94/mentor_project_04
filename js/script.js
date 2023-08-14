@@ -10,6 +10,9 @@ import { removeBigCountryBlock } from "./country_block.js";
 import { buildBorderCountry } from "./country_block.js";
 import { putBorderCountry } from "./country_block.js";
 import { filterByRegion } from "./filter_by_region.js";
+import { toggleHiddenClass } from "./toggle_class.js";
+import { searchInputMouse } from "./search_input.js";
+import { searchInputKey } from "./search_input.js";
 
 // drop down function
 
@@ -20,13 +23,24 @@ dropDownList (btn, list)
 
 // geting the counties info
 
-const resp = await axios.get('https://restcountries.com/v3.1/all');
-const response = resp.data;
+// checking the local storage
 
+const resp = await axios.get('https://restcountries.com/v3.1/all');
+
+localStorage.setItem('resp', JSON.stringify(resp))
+
+if (localStorage.getItem('resp') == null) {
+
+    localStorage.setItem('resp', JSON.stringify(resp))
+
+}
+
+const response = JSON.parse(localStorage.resp).data;
+
+console.log(response)
 // parsint the needed info into array
 
 const countries = parseCountriesInfo(response);
-
 
 // filling the page with the countries
 
@@ -61,10 +75,11 @@ const backBtn = document.querySelector('.country-descr__back')
 
 // click function on back btn
 
+
 backBtn.addEventListener('click', () => {
-    countiesSmallWrapper.classList.remove('hidden');
-    filtersWrapper.classList.remove('hidden');
-    countrieBigWrapper.classList.add('hidden');
+    toggleHiddenClass(countiesSmallWrapper);
+    toggleHiddenClass(filtersWrapper);
+    toggleHiddenClass(countrieBigWrapper);
     removeBigCountryBlock(countrieBigWrapper)
 })
 
@@ -76,9 +91,9 @@ for (let key in allCountries) {
 
         allCountries[key].onclick = () => {
 
-            countiesSmallWrapper.classList.add('hidden');
-            filtersWrapper.classList.add('hidden');
-            countrieBigWrapper.classList.remove('hidden');
+            toggleHiddenClass(countiesSmallWrapper)
+            toggleHiddenClass(filtersWrapper)
+            toggleHiddenClass(countrieBigWrapper)
     
             let countryName = countries[key].name;
             let nativeName = countries[key].nativeName;
@@ -110,37 +125,10 @@ for (let key in allCountries) {
 
 // search function
 
-    const searchInput = document.querySelector('.searchbar__input');
-    
-    searchInput.addEventListener('input', () => {
-        for (let elem of allCountries) {
-            if(!(elem.lastChild.children[0].innerHTML.includes(searchInput.value))){
-                elem.style.display = 'none'
-            }
-            else if (searchInput.value == '') {
-                elem.style.display = 'block'
-            }
-        }
-    })
+const searchInput = document.querySelector('.searchbar__input');
 
-    searchInput.addEventListener('keyup', (event) => {
-        const key = event.key;
-        if(key === "Backspace" || key === "Delete") {
-
-            for (let elem of allCountries) {
-                if (elem.style.display == 'none') {
-                    elem.style.display = 'block';
-                }
-                console.log(searchInput.value)
-                if(!(elem.lastChild.children[0].innerHTML.includes(searchInput.value))){
-                    elem.style.display = 'none'
-                }
-                else if (searchInput.value == '') {
-                    elem.style.display = 'block'
-                }
-            }
-        }
-    })
+searchInputMouse(searchInput, allCountries);
+searchInputKey(searchInput, allCountries);
 
 
 // filter by region
@@ -167,3 +155,24 @@ Oceania.onclick = () => {
     filterByRegion(allCountries, Oceania)
 } 
 
+// dark-mode
+
+let modeBtn = document.querySelector('.header__mode');
+
+let pageTitle = document.querySelector('.header__title');
+
+function addDarkMode (element) {
+    element.classList.add('dark-mode');
+}
+
+modeBtn.onclick = () => {
+    addDarkMode(pageTitle);
+
+    for (let elem of allCountries) {
+        for (let i = 0; i < elem.children[1].children.length; i++) {
+            console.log(elem.children[1].children[i])
+            elem.children[1].children[i].classList.add('dark-mode')
+        }
+    }
+
+}
