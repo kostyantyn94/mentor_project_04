@@ -1,4 +1,39 @@
-export function buildSmallCountryBlock (countryName, flag, capital, population, region) {
+// getting all wrapper blocks from DOM
+
+const countriesSmallWrapper = document.querySelector('.countries');
+const filtersWrapper = document.querySelector('.filters');
+const countrieBigWrapper = document.querySelector('.country-descr');
+
+function toggleHiddenClass (element) {
+    element.classList.toggle('hidden')
+}
+
+function renderBigCountry (country, parent) {
+    let countryName = country.name;
+    let nativeName = country.nativeName;
+    let flag = country.flag;
+    let capital = country.capital;
+    let population = country.population;
+    let region = country.region;
+    let subregion = country.subregion;
+    let tld = country.tld;
+    let currencies = country.currencie;
+    let languages = country.languages;
+    let block = buildMainCountryBlock(flag, countryName, nativeName, population, region, subregion, capital, tld, currencies, languages);
+    putCountryBigBlock(block, parent);
+
+    let allBorderCountries = '';
+            
+    for (let elem of country.borders) {
+        allBorderCountries += buildBorderCountry(elem)
+    }
+    
+    const countryDescr = document.querySelector('.country-descr__text');
+
+    putBorderCountry(allBorderCountries, countryDescr)
+}
+
+function buildSmallCountryBlock (countryName, flag, capital, population, region) {
     return`
     <div class="country__flag">
         <img src="${flag}" alt="flag">
@@ -12,11 +47,31 @@ export function buildSmallCountryBlock (countryName, flag, capital, population, 
     </div>`
 }
 
-export function putCountrySmallBlock (countryBlock, parent) {
+export function putCountrySmallBlock (countryBlock, parent, country) {
     const wrapper = document.createElement('div');
     wrapper.classList.add('country');
     wrapper.innerHTML = countryBlock;
     parent.append(wrapper);
+    wrapper.addEventListener('click', (e) => {
+        toggleHiddenClass(countriesSmallWrapper)
+        toggleHiddenClass(filtersWrapper)
+        toggleHiddenClass(countrieBigWrapper)
+        renderBigCountry(country, countrieBigWrapper)
+        console.log(country)
+    })
+}
+
+export function renderSmallCountries (parent, countries) {
+    parent.innerHTML = '';
+    for (let country of countries) {
+        let name = country.name;
+        let flag = country.flag;
+        let capital = country.capital;
+        let population = country.population;
+        let region = country.region;
+        let block = buildSmallCountryBlock(name, flag, capital, population, region);
+        putCountrySmallBlock(block, parent, country);
+    }
 }
 
 export function putCountryBigBlock (countryBlock, parent) {
@@ -58,6 +113,6 @@ export function putBorderCountry (countryName, parent) {
     let block = document.createElement('div');
     block.classList.add('country-descr__border-countries');
     block.innerHTML = `<span>Border Countries:</span>${countryName}`;
-    console.log(block.innerHTML)
     parent.append(block);
 }
+

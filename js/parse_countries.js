@@ -1,45 +1,55 @@
-export function parseCountriesInfo(response) {
+export function parseCountriesInfo(countries) {
 
-    const countries = [];
+    const parsedCountries = [];
 
-    for (let i = 0; i < response.length; i++) {
-        countries[i] = {}
-
-        countries[i].name = response[i].name.common
-
-        if ('nativeName' in response[i].name) {
-        countries[i].nativeName = response[i].name.nativeName[Object.keys(response[i].name.nativeName)[0]].official
+    for (let country of countries) {
+        parsedCountries.push({
+            name: country.name.common,
+            nativeName: countryNativeName(country),
+            flag : country.flags.svg,
+            capital : country.capital,
+            population : country.population,
+            region : country.region,
+            subregion : country.subregion,
+            tld: countryTld(country),
+            currencie: countryCurrencies(country),
+            languages: countryLanguages(country),
+            borders: countryBorders(country)
+        })
+    }
+    
+    function countryNativeName (country) {
+        if ('nativeName' in country.name) {
+        return country.name.nativeName[Object.keys(country.name.nativeName)[0]].official
         }
         else {
-        countries[i].nativeName = response[i].name.common
+        return country.name.common
         }
-    
-        countries[i].flag = response[i].flags.svg
-        countries[i].capital = response[i].capital
-        countries[i].population = response[i].population
-        countries[i].region = response[i].region
-        countries[i].subregion = response[i].subregion
-    
-        if ('tld' in response[i]) {
-            countries[i].tld = response[i].tld[0]
+    }
+    function countryTld (country) {
+        if ('tld' in country) {
+            return country.tld[0]
         }
         else {
-            countries[i].tld = 'none'
+            return 'none'
         }
-    
-        if ('currencies' in response[i]) {
-            countries[i].currencie = response[i].currencies[Object.keys(response[i].currencies)[0]].name
+    }
+    function countryCurrencies (country) {
+        if ('currencies' in country) {
+            return country.currencies[Object.keys(country.currencies)[0]].name
         }
         else {
-            countries[i].currencie = 'none'
+            return 'none'
         }
+    }
+    function countryLanguages (country) {
+
+        let allLanguages = '';
+
+        if ('languages' in country) {
     
-        let allLanguages = ''
-        
-        if ('languages' in response[i]) {
-    
-        for (let elem in response[i].languages) {
-            allLanguages += response[i].languages[elem] + ', '
+        for (let elem in country.languages) {
+            allLanguages += country.languages[elem] + ', '
         }
         
         }
@@ -47,13 +57,14 @@ export function parseCountriesInfo(response) {
             allLanguages += 'none  '
         }
         allLanguages = allLanguages.slice(0, -2);
-        countries[i].languages = allLanguages
-    
-    
-        if ('borders' in response[i]) {
-            countries[i].borders = response[i].borders
-        }
+        return allLanguages
     }
-    return countries
+    function countryBorders (country) {
+        if ('borders' in country) {
+        return country.borders
+    }
+    }
+
+    return parsedCountries
 } 
 

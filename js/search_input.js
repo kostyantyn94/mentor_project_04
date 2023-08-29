@@ -1,34 +1,18 @@
-export function searchInputMouse (searchInput, allCountries) {
+const searchBar = document.querySelector('.searchbar__input');
 
-    searchInput.addEventListener('input', () => {
-        for (let elem of allCountries) {
-            if(!(elem.lastChild.children[0].innerHTML.includes(searchInput.value))){
-                elem.style.display = 'none'
-            }
-            else if (searchInput.value == '') {
-                elem.style.display = 'block'
-            }
-        }
-    })
+
+function handleInput (event, renderSmallCountries, parseCountriesInfo) {
+    const parent = document.querySelector('.countries');
+    const countries = JSON.parse(localStorage.getItem('countries'));
+    const inputValue = event.target.value;
+    const filteredCountries = countries.filter(country => {
+        return country.name.common.toLowerCase().includes(inputValue.toLowerCase())
+    });
+    renderSmallCountries(parent, parseCountriesInfo(filteredCountries))
 }
 
-export function searchInputKey (searchInput, allCountries) {
-    searchInput.addEventListener('keyup', (event) => {
-        const key = event.key;
-        if(key === "Backspace" || key === "Delete") {
-
-            for (let elem of allCountries) {
-                if (elem.style.display == 'none') {
-                    elem.style.display = 'block';
-                }
-                console.log(searchInput.value)
-                if(!(elem.lastChild.children[0].innerHTML.includes(searchInput.value))){
-                    elem.style.display = 'none'
-                }
-                else if (searchInput.value == '') {
-                    elem.style.display = 'block'
-                }
-            }
-        }
+export function searchInput (renderSmallCountries, parseCountriesInfo) {
+    searchBar.addEventListener('input', (event) => {
+        handleInput(event, renderSmallCountries, parseCountriesInfo)
     })
 }

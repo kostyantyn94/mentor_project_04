@@ -1,4 +1,4 @@
-function dropDownList(btn, list) {
+function regionList(btn, list) {
 
     btn.addEventListener('click', () => {
         if (list.style.display == 'block'){
@@ -11,4 +11,4 @@ function dropDownList(btn, list) {
     
 }
 
-export default dropDownList
+export default regionList
